@@ -22,14 +22,25 @@ module Spectrocoin
 
     def generate_signature(data)
       private_key = OpenSSL::PKey::read(File.read(@private_key))
-      signature = private_key.sign(OpenSSL::Digest::SHA1.new, data.to_s)
+      signature = private_key.sign(OpenSSL::Digest::SHA1.new, signature_data(data))
       Base64.encode64(signature)
     end
 
     def validate_signature(data, signature)
       signature = Base64.decode64(signature)
       private_key = OpenSSL::PKey::read(File.read(@private_key))
-      private_key.public_key.verify(OpenSSL::Digest::SHA1.new, signature, data.to_s)
+      private_key.public_key.verify(OpenSSL::Digest::SHA1.new, signature, signature_data(data))
+    end
+
+    private
+
+    def signature_data(data)
+      data.to_a.map { |x| "#{x[0]}=#{prepare_value(x[1])}" }.join("&")
+    end
+
+    def prepare_value(value)
+      return CGI.escape(value) if value.is_a?(String)
+      value
     end
   end
 end
