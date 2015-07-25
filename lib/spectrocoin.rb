@@ -1,5 +1,6 @@
 require "spectrocoin/version"
+require "spectrocoin/client"
+require "spectrocoin/order"
 
 module Spectrocoin
-  # Your code goes here...
 end
